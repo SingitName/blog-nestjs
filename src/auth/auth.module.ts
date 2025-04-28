@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { GoogleStrategy } from './google.strategy';
 import * as session from 'express-session';  
 import { GroupService } from 'src/groups/group.service';
 import { GroupModule } from 'src/groups/group.module';
@@ -25,7 +24,8 @@ import { MessageService } from 'src/messages/message.service';
     GroupModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy,GroupService,MessageService],
+  providers: [AuthService,GroupService,MessageService],
+  exports:[AuthService],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

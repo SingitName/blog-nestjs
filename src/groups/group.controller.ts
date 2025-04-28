@@ -1,10 +1,10 @@
 // src/group/group.controller.ts
 import { Body, Controller, Delete, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { GroupService } from './group.service';
 import { Group } from './entities/group.entity';
 import { Request } from 'express';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller('group')
 export class GroupController {

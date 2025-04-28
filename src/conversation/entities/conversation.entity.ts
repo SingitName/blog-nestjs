@@ -12,6 +12,16 @@ export class Conversation {
     @Column({ name: 'description', nullable: true, length: 5000 })
     description: string;
 
+    @Column({
+      name: 'is_group',
+      type: 'tinyint',  // Sử dụng tinyint để lưu 0/1 trong cơ sở dữ liệu
+      default: 0,
+      transformer: {
+        to: (value: boolean) => value ? 1 : 0,  // Chuyển từ boolean sang 1/0
+        from: (value: number) => value === 1,   // Chuyển từ 1/0 thành true/false
+      },
+    })
+    isGroup: boolean;
     @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: true })
     createdAt: Date;
 

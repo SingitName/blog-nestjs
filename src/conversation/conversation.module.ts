@@ -10,6 +10,8 @@ import { ConversationService } from "./conversation.service";
 import { ConversationController } from "./conversation.controller";
 import { JwtModule } from "@nestjs/jwt";
 import { UserService } from "src/user/user.service";
+import { GoogleService } from "src/google/google/google.service";
+import { ImagesModule } from "src/images/images.module";
 
 @Module({
     imports:[ConfigModule,TypeOrmModule.forFeature([Conversation,Message,User]),
@@ -18,8 +20,8 @@ import { UserService } from "src/user/user.service";
         secret:process.env.SECRET,
         signOptions:{expiresIn:'60m'},
     })
-    ,UserModule,MessageModule],
-    providers:[ConversationService,ConfigModule,UserService],
+    ,UserModule,MessageModule,ImagesModule],
+    providers:[ConversationService,ConfigModule,UserService,GoogleService],
     controllers:[ConversationController],
     exports:[ConversationService],
 })
