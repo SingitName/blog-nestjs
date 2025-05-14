@@ -20,10 +20,6 @@ export class AuthService {
             const user = await this.userRepository.save({...registerUserDto,refresh_token:"",password:hashpassword});
         return user;
     }
-    async findUserByEmail(email:string):Promise<User>{
-        const user= await this.userRepository.findOne({where:{email}});
-        return user;
-    }
     async login(loginUserDto:LoginUserDto):Promise<any>{
         const user = await this.userRepository.findOne({where:{email:loginUserDto.email}});
       

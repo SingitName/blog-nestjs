@@ -32,6 +32,8 @@ export class User {
     default:UserRole.USER,
   })
   role:UserRole;
+  @ManyToMany(()=>)
+  @Column()
   @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: true })
   createdAt: Date;
 
