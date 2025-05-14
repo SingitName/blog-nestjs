@@ -21,7 +21,17 @@ export class User {
 
   @Column()
   password: string;
+<<<<<<< HEAD
 
+=======
+  @Column({
+    type:'enum',
+    enum:UserRole,
+    default:UserRole.USER,
+  })
+  role:UserRole;
+  @Column()
+>>>>>>> d75148b (fix:update-2)
   @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: true })
   createdAt: Date;
 
