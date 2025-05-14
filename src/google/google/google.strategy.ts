@@ -4,12 +4,14 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from 'passport-google-oauth20';
 import { AuthService } from "src/auth/auth.service"; // Sử dụng AuthService thay vì UserService
 import { User } from "src/user/entities/user.entity";
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     constructor(
         private configService: ConfigService,
-        private authService: AuthService, // Inject AuthService thay vì UserService
+        private authService: AuthService, // Sử dụng AuthService thay vì UserService
+       private userService :UserService, // Inject AuthService thay vì UserService
     ) {
         super({
             clientID: configService.get<string>('GOOGLE_CLIENT_ID'),
@@ -24,7 +26,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
           const email = emails[0].value;
           
           // Kiểm tra xem email đã tồn tại trong cơ sở dữ liệu chưa
-          let user: User = await this.authService.findUserByEmail(email);
+          let user: User = await this.userService.getUserByEmail(email);
           
           if (!user) {
               // Nếu người dùng chưa tồn tại, trả về thông tin để chuyển hướng tới trang đăng ký
