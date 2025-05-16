@@ -4,7 +4,6 @@ export class RegisterUserDto {
     @IsString()
     @IsNotEmpty({ message: 'Không được để trống!' })
     firstName: string;
-
     @IsString()
     @IsNotEmpty({ message: 'Không được để trống!' })
     lastName: string;
