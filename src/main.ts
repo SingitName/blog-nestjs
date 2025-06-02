@@ -6,7 +6,6 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   // Cấu hình Swagger
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
