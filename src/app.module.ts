@@ -4,11 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'database/data-source';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { GroupModule } from './groups/group.module';
+import { GoogleController } from './google/google/google.controller';
+import { GoogleService } from './google/google/google.service';
 import { GoogleModule } from './google/google/google.module';
-import { InformationModule } from './imformation/information.module';
-import { ImagesModule } from './images/images.module';
 import { GateWayModule } from './gateway/gateway.module';
-import { VideoModule } from './videos/videos.module';
+import { MessageModule } from './messages/message.module';
+
+import { InformationModule } from './imformation/information.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(dataSourceOptions),
@@ -16,10 +19,11 @@ import { VideoModule } from './videos/videos.module';
     AuthModule,ConfigModule.forRoot({
       isGlobal:true,
     }),
+    GoogleModule,GateWayModule,
+    MessageModule,
     InformationModule,
-    GoogleModule,
-    GateWayModule,
-    VideoModule,
   ],
+  controllers: [GoogleController],
+  providers: [GoogleService],
 })
 export class AppModule {}
