@@ -26,12 +26,6 @@ export class User {
 
   @Column()
   password: string;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-
-=======
->>>>>>> 285d1b4 (hoxfit:update)
   @Column({
     type:'enum',
     enum:UserRole,
@@ -39,10 +33,6 @@ export class User {
   })
   role:UserRole;
   @Column()
-<<<<<<< HEAD
-=======
->>>>>>> d75148b (fix:update-2)
->>>>>>> 285d1b4 (hoxfit:update)
   @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: true })
   createdAt: Date;
 
