@@ -52,14 +52,12 @@ export class ChatGateway
     };
     await this.informationService.create(information);
   }
-
   async handleDisconnect(client: Socket) {
     const user = await this.getDataUserFromToken(client);
     if (!user) return;
     await this.informationService.deleteValue(user.id, client.id);
     console.log("Client disconnected:", client.id);
   }
-
   @SubscribeMessage('messages')
   async handleMessage(
     @ConnectedSocket() client: Socket,
@@ -67,12 +65,12 @@ export class ChatGateway
   ) {
     const user: User = await this.getDataUserFromToken(client);
     if (!user) return;
-  
+  // tìm đến conversation
+   console.log('result conversation id :',messageData.conversationId);
     const conversation = await this.conversationService.findById(messageData.conversationId);
     if (!conversation) {
       return { error: 'Conversation not found' };
     }
-  
     const newMessage: CreateMessage = {
       conversation_id: messageData.conversationId,
       user_id: user.id,
@@ -88,9 +86,9 @@ export class ChatGateway
       message: savedMessage.message,
       userId: savedMessage.user_id,
       createdAt: savedMessage.createdAt,
+      userEmail:user.email,
     });
   }
-  
   @SubscribeMessage('joinConversation')
   async handleJoinConversation(
     @ConnectedSocket() client: Socket,
@@ -103,7 +101,6 @@ export class ChatGateway
     if (!conversation) {
       return { error: 'Conversation not found' };
     }
-  
     client.join(`conversation_${conversationId}`);
     console.log(`User ${user.email} joined conversation ${conversationId}`);
   }
@@ -114,11 +111,9 @@ export class ChatGateway
   ) {
     const user: User = await this.getDataUserFromToken(client);
     if (!user) return;
-
     client.leave(`conversation_${conversationId}`);
     console.log(`User ${user.email} left conversation ${conversationId}`);
   }
-
   async getDataUserFromToken(client: Socket): Promise<User> {
     const authToken = client.handshake?.auth?.token;
     try {

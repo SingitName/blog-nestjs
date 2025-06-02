@@ -13,13 +13,17 @@ import { MessageModule } from "src/messages/message.module";
 import { ConverSationModule } from "src/conversation/conversation.module";
 import { MessageService } from "src/messages/message.service";
 import { ConversationService } from "src/conversation/conversation.service";
+import { GoogleModule } from "src/google/google/google.module";
+import { GoogleService } from "src/google/google/google.service";
+import { ImagesModule } from "src/images/images.module";
 
 @Module({
-    imports:[UserModule,InformationModule,MessageModule,ConverSationModule,TypeOrmModule.forFeature([User,Information,Message,Conversation]),JwtModule.register({
+    imports:[UserModule,InformationModule,MessageModule,ConverSationModule,GoogleModule,ImagesModule,TypeOrmModule
+        .forFeature([User,Information,Message,Conversation]),JwtModule.register({
         secret:process.env.SECRET||null,
         signOptions:{expiresIn:'60m'},
     })],
-    providers:[ChatGateway,UserService,MessageService,ConversationService],
+    providers:[ChatGateway,UserService,MessageService,ConversationService,GoogleService],
     controllers:[],
 })
 export class GateWayModule{}

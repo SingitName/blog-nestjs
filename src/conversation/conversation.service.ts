@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Conversation } from "./entities/conversation.entity";
 import { Repository } from "typeorm";
@@ -10,9 +10,9 @@ import { UserService } from "src/user/user.service";
 export class ConversationService {
   constructor(
     @InjectRepository(Conversation)
-    private conversationRepository: Repository<Conversation | null>,
-    
-    private userService :UserService,
+    private conversationRepository: Repository<Conversation>,
+
+    private userService: UserService,
   ) {}
 
   async create(createConversationDto: CreateDto): Promise<Conversation> {
@@ -27,8 +27,38 @@ export class ConversationService {
   }
 
   async findById(id: number): Promise<Conversation> {
-    return this.conversationRepository.findOne({ where: { id } });
+    const conversation = await this.conversationRepository.findOne({ where: { id } });
+    if (!conversation) {
+      throw new BadRequestException('Conversation not found');
+    }
+    return conversation;
   }
+
+  async createGroupChat(loggedInUserId: number, title: string, userIds: number[] = []): Promise<Conversation> {
+    // Đảm bảo rằng người dùng đã login sẽ là thành viên trong nhóm
+    if (!userIds.includes(loggedInUserId)) {
+        userIds.push(loggedInUserId);
+    }
+
+    // Kiểm tra danh sách người dùng có hợp lệ không
+    const users = await this.userService.findUsersByIds(userIds);
+    if (!users.length) {
+        throw new BadRequestException('No users found');
+    }
+
+    // Tạo đối tượng nhóm chat và đặt người dùng đã đăng nhập làm chủ phòng (nếu cần)
+    const newConversation = this.conversationRepository.create({  // Sử dụng create từ repository
+        title,
+        users,
+        isGroup: true,  // Đánh dấu đây là nhóm chat
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        // ownerId: loggedInUserId, // Loại bỏ nếu Conversation không có ownerId
+    });
+
+    // Lưu nhóm chat vào database
+    return await this.conversationRepository.save(newConversation);
+}
 
   async getOrCreateConversation(user1Id: number, user2Id: number): Promise<Conversation> {
     // Lấy thông tin hai người dùng
@@ -36,10 +66,11 @@ export class ConversationService {
     const user2 = await this.userService.findOne({ where: { id: user2Id } });
 
     if (!user1 || !user2) {
-      throw new Error('Không tìm thấy người dùng');
+      throw new BadRequestException('One or both users not found');
     }
 
-    const [firstUserId, secondUserId] = user1Id < user2Id ? [user1Id, user2Id] : [user2Id, user1Id];
+    const [firstUserId, secondUserId] =
+      user1Id < user2Id ? [user1Id, user2Id] : [user2Id, user1Id];
 
     // Tìm kiếm cuộc trò chuyện giữa hai người dùng
     const conversation = await this.conversationRepository
@@ -66,4 +97,17 @@ export class ConversationService {
 
     return conversation;
   }
+  async getUsersInConversation(conversationId: number): Promise<User[]> {
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: conversationId },
+      relations: ['users'],  // Liên kết với bảng users để lấy danh sách người dùng
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    return conversation.users;  // Trả về danh sách người dùng
+  }
 }
+
