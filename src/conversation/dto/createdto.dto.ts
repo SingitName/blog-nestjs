@@ -1,6 +1,4 @@
 export class CreateDto {
     title: string;
-    description: string;
-    userIds: number[];
-    
-  }
+    description: string|"Cuộc trò chuyện mới";
+}

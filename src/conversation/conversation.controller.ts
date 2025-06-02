@@ -1,36 +1,28 @@
-import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from "@nestjs/common";
-
-
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "src/auth/auth.guard";
+import { CreateDto } from "./dto/createdto.dto";
 import { ConversationService } from "./conversation.service";
 import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
-import { AuthGuard } from "src/common/guards/auth.guard";
-
 
 
 @Controller('conversation')
-
+@UseGuards(AuthGuard)
 @ApiBearerAuth('access-token')
 export class ConversationController{
     constructor(
         private readonly conversationService:ConversationService,
     ){}
-
     @Post('create')
-    @UseGuards(AuthGuard) // Sử dụng AuthGuard để bảo vệ route
-    async createConversation(
-        @Body() createConversationDto: { title: string, userIds: number[] },
-        @Req() req: Request, // Lấy thông tin request sau khi guard đã xử lý
-    ) {
-        const loggedInUserId = req['user'].id; // Lấy thông tin người dùng đã được AuthGuard thêm vào request
-
-        const { title, userIds } = createConversationDto;
-
-        if (!userIds || userIds.length < 1) {
-            throw new BadRequestException('Phải chọn ít nhất 1 người dùng để tạo nhóm chat.');
+    @ApiBody({
+        schema:{
+            properties:{
+                title:{type:'string'},
+                description:{type:'string'},
+            }
         }
-
-        // Gọi hàm createGroupChat và truyền vào loggedInUserId
-        return await this.conversationService.createGroupChat(loggedInUserId, title, userIds);
+    })
+    async CreateConversation(@Body()createConversationDto:CreateDto){
+        return await this.conversationService.create(createConversationDto);
     }
     @Get(':id')
     async getById(@Param('id') id :number){
@@ -45,5 +37,4 @@ export class ConversationController{
       const conversation = await this.conversationService.getOrCreateConversation(user1Id, user2Id);
       return { id: conversation.id };
     }
-    
 }

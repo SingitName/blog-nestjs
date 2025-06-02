@@ -7,6 +7,7 @@ import { UserModule } from 'src/user/user.module';
 import { Message } from './entities/message.entity';
 import { MessageService } from './message.service';
 import { Conversation } from 'src/conversation/entities/conversation.entity';
+import { ConverSationModule } from 'src/conversation/conversation.module';
 import { MessagesController } from './message.controller';
 
 

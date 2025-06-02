@@ -6,7 +6,7 @@ import { RegisterUserDto } from './dto/register_user.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login_user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserRole } from 'src/user/entities/role';
+import { google } from 'googleapis';
 @Injectable()
 export class AuthService {
     constructor(
@@ -17,35 +17,35 @@ export class AuthService {
     private oauth2Client: any;
     async register(registerUserDto:RegisterUserDto):Promise<User>{
         const hashpassword = await bcrypt.hash(registerUserDto.password,10);
-            const user = await this.userRepository.save({...registerUserDto,refresh_token:"",password:hashpassword});
+            const user = await this.userRepository.save({...registerUserDto,refesh_token:"",password:hashpassword});
         return user;
     }
+    async findUserByEmail(email:string):Promise<User>{
+        const user= await this.userRepository.findOne({where:{email}});
+        return user;
+    }
+    validateUser(profile: any) {
+        return profile;
+      }
+    getOauth2Client() {
+        return this.oauth2Client;
+      }
     async login(loginUserDto:LoginUserDto):Promise<any>{
         const user = await this.userRepository.findOne({where:{email:loginUserDto.email}});
-      
-        const checkPass = await bcrypt.compare(loginUserDto.password,user.password);
-        if(!checkPass  || !user){
-            throw new HttpException("Username & Password không chính xác!",HttpStatus.UNAUTHORIZED);
+        if(!user){
+            throw new HttpException("Email không tồn tại!",HttpStatus.UNAUTHORIZED);
         }
-        const payload = {id:user.id,firstName:user.firstName,lastName:user.lastName,email:user.email,avatar:user.avatar,role:user.role,};
+        const checkPass = await bcrypt.compare(loginUserDto.password,user.password);
+        if(!checkPass){
+            throw new HttpException("Password không chính xác!",HttpStatus.UNAUTHORIZED);
+        }
+        const payload = {id:user.id,email:user.email};
          return this.generateToken(payload);
     }
-  
-    async logout(email: string): Promise<void> {
-        const user = await this.userRepository.createQueryBuilder('user')
-            .where('user.email = :email', { email: email })
-            .getOne();
-        if (!user) {
-            throw new Error("Không tìm thấy user!");
-        }
-        // Xóa refresh token khỏi database
-        await this.userRepository.createQueryBuilder()
-            .update(User)
-            .set({ refresh_token: "" })
-            .where('email = :email', { email: email })
-            .execute();
-    }
-    async generateToken(payload:{id:number,firstName:string,lastName:string,email:string,avatar:string,role:UserRole}){
+    googleLogin() {
+        return { message: 'User logged in successfully via Google' };
+      }
+    async generateToken(payload:{id:number,email:string}){
         const access_token = await this.jwtService.signAsync(payload);
         const refresh_token = await this.jwtService.signAsync(payload,{
             secret:'12345',
@@ -53,14 +53,31 @@ export class AuthService {
         })
         await this.userRepository.update(
             {email:payload.email},
-            {refresh_token:refresh_token},
+            {refesh_token:refresh_token},
         )
         return {
             ...payload,
             access_token,
             refresh_token,
-            
         };
     }
 
+
+
+
+    async handleVerifyToken(token) {
+        try {
+          const payload = this.jwtService.verify(token); 
+          return payload['email'];
+        } catch (e) {
+          throw new HttpException(
+            {
+              key: '',
+              data: {},
+              statusCode: HttpStatus.UNAUTHORIZED,
+            },
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+      }
 }

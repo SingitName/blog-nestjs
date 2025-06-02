@@ -1,12 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create_user.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateUserDto } from './dto/update_user.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { AuthGuard } from 'src/common/guards/auth.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 @UseGuards(AuthGuard)
@@ -21,7 +20,7 @@ export class UserController {
        async ListUser(@Query('loggedInUserId') loggedInUserId: number){
            return this.userService.findAll(loggedInUserId);
        }
-    @Get('/group/:id')
+    @Get('/find/:id')
     findId(@Param('id') id :number):Promise<User>{
         const response= this.userService.findId(id);
         return response;
@@ -61,28 +60,4 @@ export class UserController {
     delete(@Param('id') id :number):Promise<DeleteResult>{
         return this.userService.delete(id);
     }
-
-    @Post(':userId/avatar')
-    @UseInterceptors(FileInterceptor('image'))
-    @ApiConsumes('multipart/form-data')
-    @ApiBody({
-        schema: {
-          type: 'object',
-          properties: {
-            image: {
-              type: 'string',
-              format: 'binary',
-              description: 'Chọn file từ laptop để upload',
-            },
-          },
-        },
-      })
-    async updateAvatar(
-        @Param('userId') userId:number,
-        @UploadedFile() file:Express.Multer.File,
-    )
-    {
-        return this.userService.updateAvatar(userId,file);
-    }
-  
  }

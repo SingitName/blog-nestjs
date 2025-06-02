@@ -8,23 +8,17 @@ import { Message } from 'src/messages/entities/message.entity';
 import { Conversation } from 'src/conversation/entities/conversation.entity';
 
 import { Information } from 'src/imformation/entities/imformation.entity';
-import { GoogleService } from 'src/google/google/google.service';
-import { Images } from 'src/images/entities/images.entity';
-import { ImagesService } from 'src/images/images.service';
-
-
 // import { MessageModule } from 'src/messages/message.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,Message,Conversation,Information,Images]),
+  imports:[TypeOrmModule.forFeature([User,Message,Conversation,Information]),
   JwtModule.register({
       global:true,
-      secret:process.env.SECRET,
-      signOptions:{expiresIn:'3d'},
+      secret:'12345',
+      signOptions:{expiresIn:'1h'},
     }),
   ],
   controllers: [UserController],
-  providers: [UserService,GoogleService,ImagesService],
-  exports:[UserService],
+  providers: [UserService]
 })
 export class UserModule {}
