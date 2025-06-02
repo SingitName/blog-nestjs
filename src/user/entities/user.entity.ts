@@ -1,5 +1,4 @@
-import { Conversation } from 'src/conversation/entities/conversation.entity';
-import { Group } from 'src/groups/entities/group.entity';
+import { Conversation } from 'src/conversation/entities/conversation.entity'
 import { Images } from 'src/images/entities/images.entity';
 import { Information } from 'src/imformation/entities/imformation.entity';
 import { Message } from 'src/messages/entities/message.entity';
@@ -51,8 +50,8 @@ export class User {
   })
   information?: Information[];
 
-  @ManyToMany(() => Group, (group) => group.members)
-  groups: Group[];
+  // @ManyToMany(() => Group, (group) => group.members)
+  // groups: Group[];
 
   @OneToMany(() => Message, (message) => message.user)
   messages?: Message[];
