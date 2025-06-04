@@ -47,18 +47,9 @@ export class AuthService {
       }
     async generateToken(payload:{id:number,email:string}){
         const access_token = await this.jwtService.signAsync(payload);
-        const refresh_token = await this.jwtService.signAsync(payload,{
-            secret:'12345',
-            expiresIn:'1h',
-        })
-        await this.userRepository.update(
-            {email:payload.email},
-            {refesh_token:refresh_token},
-        )
         return {
             ...payload,
             access_token,
-            refresh_token,
         };
     }
 

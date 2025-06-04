@@ -21,40 +21,13 @@ export class User {
 
   @Column()
   password: string;
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-=======
-=======
-<<<<<<< HEAD
-
-=======
->>>>>>> 285d1b4 (hoxfit:update)
->>>>>>> f010524 (fix:cherry pick)
-  @Column({
-    type:'enum',
-    enum:UserRole,
-    default:UserRole.USER,
-  })
-  role:UserRole;
   @Column()
-<<<<<<< HEAD
->>>>>>> d75148b (fix:update-2)
-=======
-<<<<<<< HEAD
-=======
->>>>>>> d75148b (fix:update-2)
->>>>>>> 285d1b4 (hoxfit:update)
->>>>>>> f010524 (fix:cherry pick)
   @CreateDateColumn({ name: 'created_at', type: 'timestamp', nullable: true })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
   updatedAt: Date;
-
-  @Column()
-  refesh_token: string;
 
   @Column({ default: 1 })
   status: number;
