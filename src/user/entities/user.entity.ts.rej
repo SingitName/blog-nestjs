@@ -1,0 +1,14 @@
+diff a/src/user/entities/user.entity.ts b/src/user/entities/user.entity.ts	(rejected hunks)
+@@ -26,6 +26,12 @@
+ 
+   @Column()
+   password: string;
++<<<<<<< HEAD
++=======
++<<<<<<< HEAD
++
++=======
++>>>>>>> 285d1b4 (hoxfit:update)
+   @Column({
+     type:'enum',
+     enum:UserRole,
