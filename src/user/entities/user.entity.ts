@@ -16,9 +16,10 @@ export class User {
   @Column()
   lastName: string;
 
+  @Column({nullable: true})
+  avatar: string;
   @Column()
   email: string;
-
   @Column()
   password: string;
 
