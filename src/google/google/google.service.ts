@@ -18,12 +18,10 @@ constructor(){
       this.oauth2Client = new google.auth.OAuth2(clientID, clientSecret, redirectUri);
       // Lấy Access Token và Refresh Token từ biến môi trường
       const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
-      const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
   
-      if (accessToken && refreshToken) {
+      if (accessToken) {
         this.oauth2Client.setCredentials({
           access_token_google: accessToken,
-          refresh_token: refreshToken,
         });
       } else {
         throw new Error('Access token or refresh token is missing');

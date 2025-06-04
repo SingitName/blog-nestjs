@@ -74,7 +74,7 @@ export class GoogleController {
           // Nếu người dùng đã tồn tại trong hệ thống, trả về token và điều hướng tới frontend dashboard
           const plainUser = JSON.parse(JSON.stringify(user));
           const plainTokens = JSON.parse(JSON.stringify(tokens));
-          const userInfo = `?email=${plainUser.email}&avatar=${plainUser.avatar}&firstName=${plainUser.firstName}&lastName=${plainUser.lastName}&access_token=${plainTokens.access_token}&refresh_token=${plainTokens.refresh_token}`;
+          const userInfo = `?email=${plainUser.email}&avatar=${plainUser.avatar}&firstName=${plainUser.firstName}&lastName=${plainUser.lastName}&access_token=${plainTokens.access_token}}`;
           // Điều hướng về frontend với token
           const redirectUrl = `http://localhost:3000/client`; // Chuyển hướng tới dashboard của frontend
           return res.redirect(`${redirectUrl}${userInfo}`); 
