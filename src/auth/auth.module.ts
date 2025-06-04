@@ -15,7 +15,7 @@ import { MessageService } from 'src/messages/message.service';
     TypeOrmModule.forFeature([User,Message]),
     JwtModule.register({
       global: true,
-      secret:process.env.SECRET||'12345',
+      secret:process.env.SECRET,
       signOptions: { expiresIn: '1h' },
     }),
   ],
@@ -23,14 +23,4 @@ import { MessageService } from 'src/messages/message.service';
   providers: [AuthService,MessageService],
   exports:[AuthService],
 })
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(session({
-        secret: '12345', 
-        resave: false,
-        saveUninitialized: true,
-      }))
-      .forRoutes('*');  
-  }
-}
+export class AuthModule {}

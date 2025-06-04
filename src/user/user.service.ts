@@ -49,16 +49,16 @@ export class UserService {
     async getUserByEmail(email:string):Promise<User>{
         return await this.userRepository.findOne({where:{email:email}});
     }
-    async create(create_user:CreateUserDto):Promise<User>{
+    async create(create_user:CreateUserDto & {access_token:string}):Promise<User>{
         const hashPassword = await bcrypt.hash(create_user.password,10);
-
-        const user = await this.userRepository.save({...create_user,refresh_token:"Token_tam_thoi",password:hashPassword});
+        const newUser = {...create_user,password:hashPassword};
+        const user = await this.userRepository.save(newUser);
         return user;
     }
     async getUserWithPassword(email: string): Promise<User | null> {
         return await this.userRepository.findOne({
           where: { email: email },
-          select: ['id', 'firstName', 'lastName', 'email', 'password', 'avatar', 'refresh_token'],
+          select: ['id', 'firstName', 'lastName', 'email', 'password', 'avatar',],
         });
       }
     async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
@@ -100,7 +100,6 @@ export class UserService {
           email: userData.email,
           avatar: userData.avatar || null,  
           password: '', 
-          refresh_token: userData.refresh_token || '', 
           status: 1,  
         });
     

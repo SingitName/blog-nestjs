@@ -38,10 +38,6 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
   updatedAt: Date;
 
-  // Sửa refresh_token để có thể lưu được chuỗi dài hơn
-  @Column({ type: 'longtext', nullable: true })
-  refresh_token: string;
-
   @Column({ default: 1 })
   status: number;
 
