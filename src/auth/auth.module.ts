@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import * as session from 'express-session';  
 import { Message } from 'src/messages/entities/message.entity';
 import { MessageService } from 'src/messages/message.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [

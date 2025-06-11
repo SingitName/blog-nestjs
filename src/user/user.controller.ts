@@ -28,18 +28,7 @@ export class UserController {
     }
 
     @Post('create-user')
-    @ApiBody({
-        schema:{
-            properties:{
-                firstName:{type:'string'},
-                lastName:{type:'string'},
-                email:{type:'string'},
-                password:{type:'string'},
-                status:{type:'number'},
-            }
-        }
-    })
-    createUser(@Body() createUserDto:CreateUserDto):Promise<User>{
+    createUser(@Body() createUserDto:CreateUserDto &{access_token}):Promise<User>{
         return this.userService.create(createUserDto);
 
     }
@@ -57,32 +46,27 @@ export class UserController {
     updateUser(@Param('id') id:number,@Body() userUpdateDto:UpdateUserDto):Promise<UpdateResult>{
         return this.userService.update(id,userUpdateDto);
     }
-    @Delete('/delete/:id')
-    delete(@Param('id') id :number):Promise<DeleteResult>{
-        return this.userService.delete(id);
-    }
-
-    @Post(':userId/avatar')
-    @UseInterceptors(FileInterceptor('image'))
-    @ApiConsumes('multipart/form-data')
-    @ApiBody({
-        schema: {
-          type: 'object',
-          properties: {
-            image: {
-              type: 'string',
-              format: 'binary',
-              description: 'Chọn file từ laptop để upload',
-            },
-          },
-        },
-      })
-    async updateAvatar(
-        @Param('userId') userId:number,
-        @UploadedFile() file:Express.Multer.File,
-    )
-    {
-        return this.userService.updateAvatar(userId,file);
-    }
+    // @Post(':userId/avatar')
+    // @UseInterceptors(FileInterceptor('image'))
+    // @ApiConsumes('multipart/form-data')
+    // @ApiBody({
+    //     schema: {
+    //       type: 'object',
+    //       properties: {
+    //         image: {
+    //           type: 'string',
+    //           format: 'binary',
+    //           description: 'Chọn file từ laptop để upload',
+    //         },
+    //       },
+    //     },
+    //   })
+    // async updateAvatar(
+    //     @Param('userId') userId:number,
+    //     @UploadedFile() file:Express.Multer.File,
+    // )
+    // {
+    //     return this.userService.updateAvatar(userId,file);
+    // }
   
  }

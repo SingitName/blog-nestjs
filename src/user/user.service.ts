@@ -16,10 +16,6 @@ export class UserService {
     constructor(
         @InjectRepository(User) 
         private userRepository:Repository<User>,
-        @InjectRepository(Message) 
-        private messageRepository:Repository<Message>,
-        private googleService:GoogleService,
-        private readonly imagesService:ImagesService,
     ){}
     async findAll(loggedInUserId: number):Promise<User[]>{
         return await this.userRepository.find({
@@ -64,34 +60,21 @@ export class UserService {
     async update(id:number,updateUserDto:UpdateUserDto):Promise<UpdateResult>{
         return await this.userRepository.update(id,updateUserDto);
     }
-    async delete(id: number): Promise<DeleteResult> {
-        // Xóa tất cả các bản ghi liên quan trong bảng user_conversation bằng query SQL thủ công
-        await this.userRepository
-        .createQueryBuilder()
-        .delete()
-        .from('user_conversation')
-        .where('user_id = :id',{id})
-        .execute();
-
-        // Xóa tất cả các message liên quan đến user
-        await this.messageRepository.delete({ user_id: id });   
-        return await this.userRepository.delete(id);
-    }
-    async updateAvatar(userId:number,file:Express.Multer.File):Promise<User>{
-        const user = await this.userRepository.findOne({where:{id:userId}});
-        if(!user){
-            throw new Error('User not find!');
-        }
-        const uploadFile = await this.googleService.uploadFile(file);
-        const newImage = new Images();
-        newImage.fileId = uploadFile.fileId;
-        newImage.webViewLink = uploadFile.webViewLink;
-        newImage.webContentLink = uploadFile.webContentLink;
-        newImage.user=user;
-        await this.imagesService.create(newImage);
-        user.avatar =uploadFile.fileId;
-        return await this.userRepository.save(user);
-    }
+    // async updateAvatar(userId:number,file:Express.Multer.File):Promise<User>{
+    //     const user = await this.userRepository.findOne({where:{id:userId}});
+    //     if(!user){
+    //         throw new Error('User not find!');
+    //     }
+    //     const uploadFile = await this.googleService.uploadFile(file);
+    //     const newImage = new Images();
+    //     newImage.fileId = uploadFile.fileId;
+    //     newImage.webViewLink = uploadFile.webViewLink;
+    //     newImage.webContentLink = uploadFile.webContentLink;
+    //     newImage.user=user;
+    //     await this.imagesService.create(newImage);
+    //     user.avatar =uploadFile.fileId;
+    //     return await this.userRepository.save(user);
+    // }
     async createUser(userData: Partial<User>): Promise<User> {
         // Tạo đối tượng User mới từ dữ liệu truyền vào
         const newUser = this.userRepository.create({
