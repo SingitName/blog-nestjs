@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+<<<<<<< HEAD
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'database/data-source';
@@ -21,5 +22,24 @@ import { VideoModule } from './videos/videos.module';
     GateWayModule,
     VideoModule,
   ],
+=======
+import { UserModule } from './modules/user/user.module';
+import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './modules/auth/auth.module';
+
+@Module({
+    imports:[
+        ConfigModule.forRoot(),
+        TypeOrmModule.forRoot({
+      ...require('../ormconfig.json'),
+      autoLoadEntities: true,
+    }),
+        UserModule,
+        AuthModule,
+    ],
+    providers:[]
+>>>>>>> bdd37fd (wip:begin login)
 })
 export class AppModule {}
