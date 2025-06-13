@@ -1,49 +1,42 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { IoAdapter } from '@nestjs/platform-socket.io';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  //Tạo ứng dụng nestjs
+  //sử dụng express framework
+  //bật cors
+  const app = await NestFactory.create<NestExpressApplication>(AppModule,{cors:true});
+  //Lấy configService(lấy các biến môi trường từ .env)
+  const configService : ConfigService = app.get(ConfigService);
   // Cấu hình Swagger
   const config = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('The API description')
+    .setTitle(configService.get<string>('PROJECT_NAME'))
+    .setDescription(`Api for ${configService.get<string>('NODE_ENV')}`)
     .setVersion('1.0')
-    .addTag('Auth')
-    .addTag('Users')
-    .addBearerAuth(
-      {
-        type: 'http', // Chỉ rõ loại Bearer Token là HTTP
-        scheme: 'Bearer', // Dùng scheme bearer
-        bearerFormat: 'JWT', // Định dạng Bearer Token là JWT
-      },
-      'access-token', // Tên của security scheme, có thể thay đổi
-    )
+    .addBearerAuth({in:'header',type:'http'})
     .build();
-
+  // bật validate toàn cục
+  app.useGlobalPipes(
+    new ValidationPipe(
+      {
+        whitelist:true
+      }
+    )
+  )
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   // Cấu hình CORS
   app.enableCors({
-    origin: 'http://localhost:3000',  // Cho phép kết nối từ client React
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Các phương thức HTTP cho phép
-    credentials: true,  // Cung cấp cookies trong các yêu cầu
-    allowedHeaders: ['Content-Type', 'Authorization'],  // Các header cho phép
-    preflightContinue: false,  // Không tiếp tục gửi yêu cầu OPTIONS
-    optionsSuccessStatus: 204, // Cấu hình mã trạng thái thành công cho preflight request
+    origin:'*',
+    allowedHeaders:'*',
   });
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
-
-  // Cấu hình WebSocket Adapter
-  app.useWebSocketAdapter(new IoAdapter(app));
-  await app.listen(5000); 
+  //start app
+  await app.listen(process.env.PORT||3033); 
 }
 
 bootstrap();
